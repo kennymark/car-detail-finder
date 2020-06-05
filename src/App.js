@@ -42,7 +42,7 @@ function App() {
         errorMsg: 'There are no results for the registration number. Please try again'
       })
     }
-  }, [])
+  }, [isDev])
 
 
   const { data, errorMsg, error, loading } = state
