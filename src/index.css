@@ -1,0 +1,52 @@
+@import '~antd/dist/antd.css';
+
+body {
+  margin                 : 0;
+  padding                : 0;
+  -webkit-font-smoothing : antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x             : hidden;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
+    monospace;
+}
+
+h1 {
+  font-size: 2rem !important;
+  color    : black !important;
+}
+
+h2 {
+  color    : rgb(56, 56, 56) !important;
+  font-size: 1.6rem !important;
+  color    : #565656 !important
+}
+
+
+.container {
+  margin    : auto;
+  margin-top: 100px;
+  width     : 80%;
+}
+
+.loading {
+  margin  : auto;
+  position: relative;
+  left    : 35%;
+
+}
+
+.ant-card-meta-description {
+  color      : rgb(76, 156, 228);
+  /* float   : right; */
+  font-weight: 700;
+  font-size  : 1.4rem;
+}
+
+.car-header {
+  display        : flex;
+  align-items    : baseline;
+  justify-content: space-between;
+}
