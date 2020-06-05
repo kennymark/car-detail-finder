@@ -17,7 +17,7 @@ function App() {
 
   const local = 'http://localhost:34567/.netlify/functions/car-finder?number='
 
-  const prod = 'https://us-central1-webproduct-1481880564821.cloudfunctions.net/carinfofinder/get-car'
+  const prod = 'https://car-finder.netlify.app/.netlify/functions/car-finder?number'
 
   const icon = <Icon type="loading" style={{ fontSize: 104, margin: 100 }} />
   const { Step } = Steps
