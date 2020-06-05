@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Input, Spin, Icon, Steps, Tag, Empty } from 'antd';
 import _ from 'lodash'
 import FirstRow from './components/FirstRow'
@@ -26,9 +26,10 @@ function App() {
 
   useEffect(() => {
     getCarDetails()
-  }, [])
+    // eslint-disable-next-line no-use-before-define
+  }, [getCarDetails, prod])
 
-  const getCarDetails = async (number = 'bl04djv') => {
+  const getCarDetails = useCallback(async (number = 'bl04djv') => {
     try {
       setState({ loading: true })
       const { data } = await axios.get(isDev ? local + number : prod + number)
@@ -41,7 +42,7 @@ function App() {
         errorMsg: 'There are no results for the registration number. Please try again'
       })
     }
-  }
+  }, [])
 
 
   const { data, errorMsg, error, loading } = state
