@@ -1,86 +1,77 @@
 import React, { useState, useEffect } from 'react';
-import { Input, Spin, Icon, Steps, Tag, Alert } from 'antd';
+import { Input, Spin, Icon, Steps, Tag, Empty } from 'antd';
 import _ from 'lodash'
 import FirstRow from './components/FirstRow'
 import SecondRow from './components/SecondRow'
 import ThirdRow from './components/ThirdRow'
-
+import axios from 'axios'
 
 function App() {
   const [state, setState] = useState({
     data: {},
-    noDetails: false,
+    error: null,
     errorMsg: '',
-    searchVal: '',
     loading: false
   })
-
-  const local = 'http://localhost:34567/.netlify/functions/car-finder?number='
+  const [searchVal, setSearchVal] = useState('initialState')
+  const local = 'http://localhost:65042/.netlify/functions/car-finder?number='
 
   const prod = 'https://car-finder.netlify.app/.netlify/functions/car-finder?number='
 
-  const icon = <Icon type="loading" style={{ fontSize: 104, margin: 100 }} />
+  const icon = <Icon type="loading" style={{ fontSize: 204, marginTop: 100 }} />
   const { Step } = Steps
   const isDev = process.env.NODE_ENV === 'development'
 
+
+
   useEffect(() => {
-    console.log(process.env.NODE_ENV)
     getCarDetails()
   }, [])
 
   const getCarDetails = async (number = 'bl04djv') => {
-    // if (state.searchVal.length < 4) {
-    //   setState({
-    //     errorMsg: 'Please enter registration plate number to process',
-    //     noDetails: true,
-    //   })
-    // }
-
     try {
-      const req = await fetch(`${isDev ? local : prod}${number}`, { headers: { accept: "Accept: application/json" } })
-      const data = await req.json()
-      console.log(data);
-      setState({ data })
+      setState({ loading: true })
+      const { data } = await axios.get(isDev ? local + number : prod + number)
+      console.log(data)
+      setState({ data, loading: false, error: false })
     } catch (error) {
       setState({
         loading: false,
-        noDetails: true,
-        errorMsg: 'There are no results for the registration number'
+        error,
+        errorMsg: 'There are no results for the registration number. Please try again'
       })
     }
   }
 
-  if (state.loading) {
-    return (
-      <Spin indicator={icon} tip="Loading..." />
-    )
-  }
 
-  const { data, errorMsg, noDetail } = state
+  const { data, errorMsg, error, loading } = state
   return (
     <React.Fragment>
-      <pre>
-        {/* {JSON.stringify(data, null, 2)} */}
-        {/* {JSON.stringify(process.env, null, 2)} */}
-      </pre>
       <div className="container">
 
-        <h1>What is the vehicle's registration number?</h1>
+        <h1 className='text-center'>What is the vehicle's registration number?</h1>
         <Input.Search
           placeholder="Enter Car Plate No Here..."
           size="large"
-          onChange={({ target }) => setState({ searchVal: target.value })}
+          autoCapitalize
+          autoFocus
+          autoSave
+          allowClear
+          onChange={({ target: { value } }) => setSearchVal(value)}
           onSearch={(val) => getCarDetails(val)}
           onPressEnter={({ target }) => getCarDetails(target.value)}
           enterButton='Search'
         />
-        {noDetail && <Alert style={{ margin: '20px 0' }} closable message={errorMsg} type="error" showIcon />}
+
+        {loading && <center><Spin indicator={icon} tip="Loading..." /></center>}
+        {error && <Empty description={errorMsg} style={{ marginTop: 100 }} />}
+
         {data &&
           <>
             <div style={{ marginTop: 16 }}>
               <div className='car-header'>
-                <h1>{data.selectedPreviewLine1}</h1>
-                <h2>{data.selectedPreviewLine2}</h2>
+                <h1>{data?.selectedPreviewLine1}</h1>
+                <h2>{data?.selectedPreviewLine2}</h2>
               </div>
               <div>
                 Registration No <h3> {_.upperCase(data.registrationNumber)} <span>
@@ -88,13 +79,13 @@ function App() {
               </div>
             </div>
 
-            {data.vehicleType &&
+            {data?.vehicleType &&
               (
                 <div className='mb-2'>
                   <Steps size="small" progressDot current={2} style={{ margin: '40px 0' }}>
-                    <Step title={data?.vehicleType.manufacturedYear} description="Manufactured Year" />
-                    <Step title={data.vehicleType.manufacturedFrom} description="Manufactured From" />
-                    <Step title={data.vehicleType.manufacturedTo} description="Manufactured To" />
+                    <Step title={data?.vehicleType?.manufacturedYear} description="Manufactured Year" />
+                    <Step title={data?.vehicleType?.manufacturedFrom} description="Manufactured From" />
+                    <Step title={data?.vehicleType?.manufacturedTo} description="Manufactured To" />
                   </Steps>
                   <FirstRow data={data} />
                   <SecondRow data={data} />
